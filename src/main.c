@@ -1,21 +1,51 @@
-/* Brainf**k interpreter by Henry Langmack | 11/23/2020 */
+/* Brainf**k interpreter by henry-lang */
 
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <inttypes.h>
 
 #include "bf_program.h"
+#include "log.h"
+
+bool is_option(char* str) {
+    if(strlen(str) > 3 && str[0] == '-' && str[1] == '-') return true;
+
+    return false;
+}
+
+void handle_option(BFConfig* config, char* opt) {
+    if(!strcmp(opt, "--verbose")) {
+        BF_LOG_VERBOSE = true;
+    } else if(!strncmp(opt, "--mem-size=", 11)) {
+        char* mem_size_str = opt + 11;
+        config->memory_size = (size_t) strtoumax(mem_size_str, NULL, 10);
+    } else if(!strncmp(opt, "--stack-size=", 13)) {
+        char* stack_size_str = opt + 13;
+        config->stack_size = (size_t) strtoumax(stack_size_str, NULL, 10);
+    } else {
+        bf_logf_error("?", "Unknown option: %s.", opt);
+    }
+}
 
 int main(int argc, char** argv) {
-    if(argc == 1) {
-        bf_log_error("?", "No file supplied to run.");
-    } else if(argc != 2) {
-        bf_log_error("?", "Unexpected number of arguments.");
+    BFConfig config = {
+        .filename = "main.bf",
+
+        .memory_size = 30000,
+        .stack_size = 128
+    };
+
+    for(int i = 1; i < argc; i++) {
+        if(is_option(argv[i])) {
+            handle_option(&config, argv[i]);
+        } else {
+            config.filename = argv[i];
+        }
     }
 
-    char* file_name = argv[1];
-
-    BFProgram program = bf_construct(file_name, BF_DEFAULT_MEMORY, BF_DEFAULT_STACK);
+    BFProgram program = bf_construct(config);
 
     bf_validate(&program);
     bf_interpret(&program);

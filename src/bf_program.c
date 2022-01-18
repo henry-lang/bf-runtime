@@ -8,65 +8,63 @@
 #include <stdio.h>
 
 #include "bf_program.h"
+#include "log.h"
 
-BFProgram bf_construct(char* filename, size_t memory_size, size_t stack_size) {
-    bf_log_info(filename, "Constructing");
+BFProgram bf_construct(BFConfig config) {
+    bf_log_info(config.filename, "Constructing");
     BFProgram program;
 
-    bf_log_info(filename, "Constructing: Opening file.");
-    FILE* file = fopen(filename, "r");
+    program.config = config;
+
+    bf_log_info(config.filename, "Constructing: Opening file.");
+    FILE* file = fopen(config.filename, "r");
     if(file == NULL) {
-        bf_log_error(filename, "Failed to open file.");
+        if(!strcmp(config.filename, "main.bf")) {
+            bf_log_error(config.filename, "Failed to open file. This may be because you didn't specify a file and it defaults to main.bf.");
+        } else {
+            bf_log_error(config.filename, "Failed to open file.");
+        }
     }
-    // Calculate program's size
+
     fseek(file, 0L, SEEK_END);
     size_t size = ftell(file);
     fseek(file, 0L, SEEK_SET);
 
     program.source = malloc(sizeof(char) * (size + 1));
     if(program.source == NULL) {
-        bf_log_error(filename, "Failed to allocate file source.");
+        bf_log_error(config.filename, "Failed to allocate file source.");
     }
-
-    program.filename = malloc(sizeof(char) * (strlen(filename) + 1));
-    if(program.filename == NULL) {
-        bf_log_error(filename, "Failed to allocate file name. Why?");
-    }
-    strcpy(program.filename, filename);
 
     program.size = size;
-    // Copy file into source memory
+
     if(fread(program.source, sizeof(char), size, file) == 1) {
-        bf_log_error(filename, "Failed to read file source.");
+        bf_log_error(config.filename, "Failed to read file source.");
     }
     program.source[size] = '\0';
     program.current = program.source;
     fclose(file);
 
-    bf_log_info(filename, "Constructing: Allocating program resources.");
-    program.memory = malloc(sizeof(char) * memory_size);
+    bf_log_info(config.filename, "Constructing: Allocating program resources.");
+    program.memory = malloc(sizeof(char) * config.memory_size);
     program.cell = program.memory;
     if(program.memory == NULL) {
-        bf_log_error(filename, "Failed to allocate program memory.");
+        bf_log_error(config.filename, "Failed to allocate program memory.");
     }
-    memset(program.memory, 0, memory_size);
-    program.memory_size = memory_size;
+    memset(program.memory, 0, config.memory_size);
 
-    program.stack = malloc(sizeof(char*) * stack_size);
+    program.stack = malloc(sizeof(char*) * config.stack_size);
     program.stack_pointer = *(program.stack);
     if(program.stack == NULL) {
-        bf_log_error(filename, "Failed to allocate program stack.");
+        bf_log_error(config.filename, "Failed to allocate program stack.");
     }
-    program.stack_size = stack_size;
 
-
-    bf_log_info(filename, "Finished Constructing");
+    bf_log_info(config.filename, "Finished Constructing");
     return program;
 }
 
 void bf_validate(BFProgram* program) {
-    bf_log_info(program->filename, "Validating");
-    bf_log_info(program->filename, "Validating: Parsing file for errors.");
+    bf_log_info(program->config.filename, "Validating");
+    bf_log_info(program->config.filename, "Validating: Parsing file for errors.");
 
     char cur;
     int bracket_count = 0;
@@ -109,11 +107,11 @@ void bf_validate(BFProgram* program) {
     }
 
     if(bracket_count != 0) {
-        bf_log_error(program->filename, "Syntax Error: Mismatched brackets.");
+        bf_log_error(program->config.filename, "Syntax Error: Mismatched brackets.");
     }
 
-    bf_log_info(program->filename, "Finished Validating");
-    bf_log_info(program->filename, "Program output will be shown below.\n\n");
+    bf_log_info(program->config.filename, "Finished Validating");
+    bf_log_info(program->config.filename, "Program output will be shown below.\n\n");
 }
 
 void bf_interpret(BFProgram* program) {
@@ -186,7 +184,6 @@ void bf_interpret(BFProgram* program) {
 
 void bf_free(BFProgram* program) {
     free(program->source);
-    free(program->filename);
     free(program->memory);
     free(program->stack);
 }
