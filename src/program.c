@@ -1,19 +1,13 @@
-//
-// Created by henry on 7/28/21.
-//
-
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 #include <stdio.h>
 
-#include "bf_program.h"
+#include "program.h"
 #include "log.h"
 
 BFProgram bf_construct(BFConfig config) {
-    bf_log_info(config.filename, "Constructing");
     BFProgram program;
-
     program.config = config;
 
     bf_log_info(config.filename, "Constructing: Opening file.");
@@ -59,11 +53,13 @@ BFProgram bf_construct(BFConfig config) {
     }
 
     bf_log_info(config.filename, "Finished Constructing");
+
+    bf_validate(&program);
+
     return program;
 }
 
 void bf_validate(BFProgram* program) {
-    bf_log_info(program->config.filename, "Validating");
     bf_log_info(program->config.filename, "Validating: Parsing file for errors.");
 
     char cur;
@@ -111,10 +107,10 @@ void bf_validate(BFProgram* program) {
     }
 
     bf_log_info(program->config.filename, "Finished Validating");
-    bf_log_info(program->config.filename, "Program output will be shown below.\n\n");
+    bf_log_info(program->config.filename, "Program output will be shown below.\n");
 }
 
-void bf_interpret(BFProgram* program) {
+void bf_run(BFProgram* program) {
     while(*(program->current) != '\0') {
         char token = *(program->current);
 

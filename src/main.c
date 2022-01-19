@@ -1,12 +1,10 @@
 /* Brainf**k interpreter by henry-lang */
 
-#include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <inttypes.h>
 
-#include "bf_program.h"
+#include "program.h"
 #include "log.h"
 
 bool is_option(char* str) {
@@ -46,8 +44,6 @@ int main(int argc, char** argv) {
     }
 
     BFProgram program = bf_construct(config);
-
-    bf_validate(&program);
-    bf_interpret(&program);
+    bf_run(&program);
     bf_free(&program);
 }

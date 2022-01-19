@@ -1,7 +1,3 @@
-//
-// Created by henry on 7/28/21.
-//
-
 #ifndef BF_PROGRAM_H
 #define BF_PROGRAM_H
 
@@ -9,17 +5,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define BF_DEFAULT_MEMORY 3000
-#define BF_DEFAULT_STACK 100
-
-typedef struct {
+typedef struct BFConfig {
     char* filename;
     
     size_t memory_size;
     size_t stack_size;
 } BFConfig;
 
-typedef struct {
+typedef struct BFProgram {
     BFConfig config;
 
     char* source;
@@ -36,7 +29,7 @@ typedef struct {
 
 BFProgram bf_construct(BFConfig config);
 void bf_validate(BFProgram* program);
-void bf_interpret(BFProgram* program);
+void bf_run(BFProgram* program);
 void bf_free(BFProgram* program);
 
 #endif
