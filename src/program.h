@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "op.h"
+
 typedef struct BFConfig {
     char* filename;
     
@@ -15,20 +17,13 @@ typedef struct BFConfig {
 typedef struct BFProgram {
     BFConfig config;
 
-    char* source;
-    size_t size;
-
-    char* current;
+    BFOpArray ops;
 
     char* memory;
-    char* cell;
-
-    char** stack;
-    char* stack_pointer;
+    char* ptr;
 } BFProgram;
 
 BFProgram bf_construct(BFConfig config);
-void bf_validate(BFProgram* program);
 void bf_run(BFProgram* program);
 void bf_free(BFProgram* program);
 

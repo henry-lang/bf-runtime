@@ -2,10 +2,12 @@
 
 #include "op.h"
 
-void bf_op_array_init(BFOpArray* op_array, size_t capacity) {
-    op_array->ops = malloc(sizeof(BFOp) * capacity);
-    op_array->length = 0;
-    op_array->capacity = capacity;
+BFOpArray bf_op_array_init(size_t capacity) {
+    return (BFOpArray) {
+        .ops = malloc(sizeof(BFOp) * capacity),
+        .length = 0,
+        .capacity = capacity
+    };
 }
 
 void bf_op_array_append(BFOpArray* op_array, BFOp op) {

@@ -4,14 +4,15 @@
 #define BF_LOG_H
 
 extern bool BF_LOG_VERBOSE;
+extern char* BF_LOG_FILENAME;
 
-void bf_log_info(char* filename, char* message);
-void bf_logf_info(char* filename, char* format, ...);
+void bf_log_info(char* message);
+void bf_logf_info(char* format, ...);
 
-void bf_log_warn(char* filename, char* message);
-void bf_logf_warn(char* filename, char* format, ...);
+void bf_log_warn(char* message);
+void bf_logf_warn(char* format, ...);
 
-void bf_log_error(char* filename, char* mesasge);
-void bf_logf_error(char* filename, char* format, ...);
+void bf_log_error(char* mesasge);
+void bf_logf_error(char* format, ...);
 
 #endif

@@ -5,6 +5,7 @@
 #include <inttypes.h>
 
 #include "program.h"
+#include "op.h"
 #include "log.h"
 
 bool is_option(char* str) {
@@ -36,14 +37,15 @@ int main(int argc, char** argv) {
     };
 
     for(int i = 1; i < argc; i++) {
-        if(is_option(argv[i])) {
+        if (is_option(argv[i])) {
             handle_option(&config, argv[i]);
         } else {
             config.filename = argv[i];
         }
     }
 
+    BF_LOG_FILENAME = config.filename;
     BFProgram program = bf_construct(config);
-    bf_run(&program);
+//    bf_run(&program);
     bf_free(&program);
 }

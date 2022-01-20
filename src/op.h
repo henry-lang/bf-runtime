@@ -28,7 +28,7 @@ typedef struct BFOpArray {
     size_t capacity;
 } BFOpArray;
 
-void bf_op_array_init(BFOpArray* op_array, size_t capacity);
+BFOpArray bf_op_array_init(size_t capacity);
 void bf_op_array_append(BFOpArray* op_array, BFOp op);
 void bf_op_array_free(BFOpArray* op_array);
 
