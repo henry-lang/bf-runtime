@@ -1,12 +1,11 @@
 /* Brainf**k interpreter by henry-lang */
 
-#include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <inttypes.h>
 
-#include "bf_program.h"
+#include "program.h"
+#include "op.h"
 #include "log.h"
 
 bool is_option(char* str) {
@@ -38,16 +37,15 @@ int main(int argc, char** argv) {
     };
 
     for(int i = 1; i < argc; i++) {
-        if(is_option(argv[i])) {
+        if (is_option(argv[i])) {
             handle_option(&config, argv[i]);
         } else {
             config.filename = argv[i];
         }
     }
 
+    BF_LOG_FILENAME = config.filename;
     BFProgram program = bf_construct(config);
-
-    bf_validate(&program);
-    bf_interpret(&program);
+//    bf_run(&program);
     bf_free(&program);
 }
