@@ -1,5 +1,4 @@
-#ifndef BF_PROGRAM_H
-#define BF_PROGRAM_H
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,5 +25,3 @@ typedef struct BFProgram {
 BFProgram bf_construct(BFConfig config);
 void bf_run(BFProgram* program);
 void bf_free(BFProgram* program);
-
-#endif

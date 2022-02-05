@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdint.h>
 
 #include "parse.h"
 #include "op.h"
@@ -15,7 +14,7 @@ BFJumpStack bf_jump_stack_init(size_t capacity) {
 
 void bf_jump_stack_push(BFJumpStack* stack, size_t jump) {
     if(stack->length == stack->capacity) {
-        stack->capacity *= 2;
+        stack->capacity = stack->capacity == 0 ? 1 : stack->capacity * 2;
         stack->jumps = realloc(stack->jumps, stack->capacity * sizeof(BFOp));
     }
     stack->jumps[stack->length++] = jump;
@@ -38,47 +37,64 @@ BFOpArray bf_parse(const char* source, size_t length) {
 
     for(size_t i = 0; i < length; i++) {
         switch(source[i]) {
-            case '+':
+            case '+': {
+                bf_op_array_append(&op_array, (BFOp) {
+                    .type = CHANGE,
+                    .value = 1
+                });
+                break;
+            }
             case '-': {
-                intmax_t count = source[i] == '+' ? 1 : -1;
-
-                while(source[++i] == '+' || source[i] == '-' && i < length) {
-                    count += source[i] == '+' ? 1 : -1;
-                }
-
-                if(count != 0) {
-                    bf_op_array_append(&op_array, (BFOp) {
-                        .type = CHANGE,
-                        .value = {
-                            .int_val = count
-                        }
-                    });
-                }
+                bf_op_array_append(&op_array, (BFOp) {
+                    .type = CHANGE,
+                    .value = -1
+                });
                 break;
             }
             case '>': {
-                intmax_t count = source[i] == '>' ? 1 : -1;
-
-                while(source[++i] == '>' || source[i] == '<' && i < length) {
-                    count += source[i] == '>' ? 1 : -1;
-                }
-
-                if(count != 0) {
-                    bf_op_array_append(&op_array, (BFOp) {
-                        .type = MOVE,
-                        .value = {
-                            .int_val = count
-                        }
-                    });
-                }
+                bf_op_array_append(&op_array, (BFOp) {
+                    .type = MOVE,
+                    .value = 1
+                });
+                break;
+            }
+            case '<': {
+                bf_op_array_append(&op_array, (BFOp) {
+                    .type = MOVE,
+                    .value = -1
+                });
+                break;
+            }
+            case '[': {
+                bf_op_array_append(&op_array, (BFOp) {
+                    .type = JUMP_ZERO,
+                    .value = 0 // Temporary
+                });
+                break;
+            }
+            case ']': {
+                bf_op_array_append(&op_array, (BFOp) {
+                    .type = JUMP_NONZERO,
+                    .value = 0 // Temporary
+                });
+                break;
+            }
+            case '.': {
+                bf_op_array_append(&op_array, (BFOp) {
+                    .type = PUT,
+                    .value = 1
+                });
+                break;
+            }
+            case ',': {
+                bf_op_array_append(&op_array, (BFOp) {
+                    .type = GET,
+                    .value = 1
+                });
                 break;
             }
         }
     }
-
-//    for(size_t i = 0; i < op_array.length; i++) {
-//        printf("%u %jd\n", op_array.ops[1].type, op_array.ops[i].value.int_val);
-//    }
 
     return op_array;
 }

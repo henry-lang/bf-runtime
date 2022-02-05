@@ -1,5 +1,4 @@
-#ifndef BF_PARSE_H
-#define BF_PARSE_H
+#pragma once
 
 #include "op.h"
 
@@ -15,5 +14,3 @@ size_t bf_jump_stack_pop(BFJumpStack* stack);
 void bf_jump_stack_free(BFJumpStack* stack);
 
 BFOpArray bf_parse(const char* source, size_t length);
-
-#endif

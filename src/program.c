@@ -6,6 +6,7 @@
 #include "program.h"
 #include "log.h"
 #include "parse.h"
+#include "optimize.h"
 
 BFProgram bf_construct(BFConfig config) {
     BFProgram program;
@@ -36,9 +37,14 @@ BFProgram bf_construct(BFConfig config) {
     source[length] = '\0';
     fclose(file);
 
-    program.ops = bf_parse(source, length);
+    BFOpArray unoptimized = bf_parse(source, length);
+    program.ops = bf_optimize(&unoptimized);
+    for(size_t i = 0; i < unoptimized .length; i++) {
+        printf("%s: %lld\n", bf_op_str(program.ops.ops[i].type), program.ops.ops[i].value);
+    }
 
-//    bf_log_info(config.filename, "Constructing: Allocating program resources.");
+    bf_op_array_free(&unoptimized);
+
     program.memory = malloc(sizeof(char) * config.memory_size);
     program.ptr = program.memory;
     if(program.memory == NULL) {

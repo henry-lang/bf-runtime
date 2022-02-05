@@ -1,7 +1,6 @@
-#include <stdbool.h>
+#pragma once
 
-#ifndef BF_LOG_H
-#define BF_LOG_H
+#include <stdbool.h>
 
 extern bool BF_LOG_VERBOSE;
 extern char* BF_LOG_FILENAME;
@@ -14,5 +13,3 @@ void bf_logf_warn(char* format, ...);
 
 void bf_log_error(char* mesasge);
 void bf_logf_error(char* format, ...);
-
-#endif
