@@ -4,18 +4,20 @@
 #include <stdlib.h>
 
 typedef enum BFOpType {
-    CHANGE,
-    MOVE,
-    SET_ZERO,
-    JUMP_ZERO,
-    JUMP_NONZERO,
-    PUT,
-    GET
+    BF_OP_INC, // Increment
+    BF_OP_DEC, // Decrement
+    BF_OP_FW,  // Forward
+    BF_OP_BK,  // Backward
+    BF_OP_SZ,  // Set Zero
+    BF_OP_JZ,  // Jump If Zero
+    BF_OP_JNZ, // Jump If Not Zero
+    BF_OP_PUT, // Put Cell
+    BF_OP_GET  // Get Into Cell
 } BFOpType;
 
 typedef struct BFOp {
     BFOpType type;
-    int64_t value;
+    uint16_t value;
 } BFOp;
 
 typedef struct BFOps {

@@ -37,10 +37,13 @@ BFProgram bf_construct(BFConfig config) {
     source[length] = '\0';
     fclose(file);
 
-    BFOps unoptimized = bf_parse(source, length);
-    program.ops = bf_optimize(&unoptimized);
-//    bf_ops_print(&program.ops);
-    bf_ops_free(&unoptimized);
+    BFOps unopt = bf_parse(source, length);
+    size_t unopt_len = unopt.length;
+    program.ops = bf_optimize(&unopt);
+    size_t opt_len = program.ops.length;
+    bf_logf_info("%lu -> %lu\n", unopt_len, opt_len);
+    bf_ops_print(&unopt);
+    bf_ops_free(&unopt);
 
     program.memory = malloc(sizeof(char) * config.memory_size);
     program.ptr = program.memory;

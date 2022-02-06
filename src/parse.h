@@ -14,3 +14,4 @@ size_t bf_jump_stack_pop(BFJumpStack* stack);
 void bf_jump_stack_free(BFJumpStack* stack);
 
 BFOps bf_parse(const char* source, size_t length);
+void bf_link(BFOps* op_array);

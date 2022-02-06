@@ -6,13 +6,15 @@
 char* bf_op_str(BFOpType type) {
     switch(type) {
         default: return NULL;
-        case CHANGE: return "CHANGE";
-        case MOVE: return "MOVE";
-        case SET_ZERO: return "SET_ZERO";
-        case JUMP_ZERO: return "JUMP_ZERO";
-        case JUMP_NONZERO: return "JUMP_NONZERO";
-        case PUT: return "PUT";
-        case GET: return "GET";
+        case BF_OP_INC: return "INC";
+        case BF_OP_DEC: return "DEC";
+        case BF_OP_FW: return "FW";
+        case BF_OP_BK: return "BK";
+        case BF_OP_SZ: return "SZ";
+        case BF_OP_JZ: return "JZ";
+        case BF_OP_JNZ: return "JNZ";
+        case BF_OP_PUT: return "PUT";
+        case BF_OP_GET: return "GET";
     }
 }
 
@@ -34,7 +36,7 @@ void bf_ops_append(BFOps* op_array, BFOp op) {
 
 void bf_ops_print(BFOps* op_array) {
     for(size_t i = 0; i < op_array->length; i++) {
-        printf("%s: %lld\n", bf_op_str(op_array->ops[i].type), op_array->ops[i].value);
+        printf("%s: %d\n", bf_op_str(op_array->ops[i].type), op_array->ops[i].value);
     }
 }
 

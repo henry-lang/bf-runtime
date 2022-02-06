@@ -39,62 +39,87 @@ BFOps bf_parse(const char* source, size_t length) {
         switch(source[i]) {
             case '+': {
                 bf_ops_append(&op_array, (BFOp) {
-                        .type = CHANGE,
+                        .type = BF_OP_INC,
                         .value = 1
                 });
                 break;
             }
             case '-': {
                 bf_ops_append(&op_array, (BFOp) {
-                        .type = CHANGE,
-                        .value = -1
+                        .type = BF_OP_DEC,
+                        .value = 1 
                 });
                 break;
             }
             case '>': {
                 bf_ops_append(&op_array, (BFOp) {
-                        .type = MOVE,
+                        .type = BF_OP_FW,
                         .value = 1
                 });
                 break;
             }
             case '<': {
                 bf_ops_append(&op_array, (BFOp) {
-                        .type = MOVE,
-                        .value = -1
+                        .type = BF_OP_BK,
+                        .value = 1
                 });
                 break;
             }
             case '[': {
                 bf_ops_append(&op_array, (BFOp) {
-                        .type = JUMP_ZERO,
+                        .type = BF_OP_JZ,
                         .value = 0 // Temporary
                 });
                 break;
             }
             case ']': {
                 bf_ops_append(&op_array, (BFOp) {
-                        .type = JUMP_NONZERO,
+                        .type = BF_OP_JNZ,
                         .value = 0 // Temporary
                 });
                 break;
             }
             case '.': {
                 bf_ops_append(&op_array, (BFOp) {
-                        .type = PUT,
+                        .type = BF_OP_PUT,
                         .value = 1
                 });
                 break;
             }
             case ',': {
                 bf_ops_append(&op_array, (BFOp) {
-                        .type = GET,
+                        .type = BF_OP_GET,
                         .value = 1
                 });
                 break;
             }
         }
     }
+    
+    bf_link(&op_array);
 
     return op_array;
+}
+
+void bf_link(BFOps* op_array) {
+    BFJumpStack jumps = bf_jump_stack_init(16);
+    for(size_t i = 0; i < op_array->length; i++) {
+        switch(op_array->ops[i].type) {
+            default: break;
+            case BF_OP_JZ: {
+                bf_jump_stack_push(&jumps, i);
+                break;
+            }
+            case BF_OP_JNZ: {
+                size_t opening = bf_jump_stack_pop(&jumps);
+                op_array->ops[opening].value = i;
+                op_array->ops[i].value = opening;
+                break;
+            }
+        }
+    }
+    if(jumps.length > 0) {
+        bf_log_error("Expected a closing bracket.");
+    }
+    bf_jump_stack_free(&jumps);
 }
