@@ -32,64 +32,64 @@ void bf_jump_stack_free(BFJumpStack* stack) {
     free(stack->jumps);
 }
 
-BFOpArray bf_parse(const char* source, size_t length) {
-    BFOpArray op_array = bf_op_array_init(1);
+BFOps bf_parse(const char* source, size_t length) {
+    BFOps op_array = bf_ops_init(length);
 
     for(size_t i = 0; i < length; i++) {
         switch(source[i]) {
             case '+': {
-                bf_op_array_append(&op_array, (BFOp) {
-                    .type = CHANGE,
-                    .value = 1
+                bf_ops_append(&op_array, (BFOp) {
+                        .type = CHANGE,
+                        .value = 1
                 });
                 break;
             }
             case '-': {
-                bf_op_array_append(&op_array, (BFOp) {
-                    .type = CHANGE,
-                    .value = -1
+                bf_ops_append(&op_array, (BFOp) {
+                        .type = CHANGE,
+                        .value = -1
                 });
                 break;
             }
             case '>': {
-                bf_op_array_append(&op_array, (BFOp) {
-                    .type = MOVE,
-                    .value = 1
+                bf_ops_append(&op_array, (BFOp) {
+                        .type = MOVE,
+                        .value = 1
                 });
                 break;
             }
             case '<': {
-                bf_op_array_append(&op_array, (BFOp) {
-                    .type = MOVE,
-                    .value = -1
+                bf_ops_append(&op_array, (BFOp) {
+                        .type = MOVE,
+                        .value = -1
                 });
                 break;
             }
             case '[': {
-                bf_op_array_append(&op_array, (BFOp) {
-                    .type = JUMP_ZERO,
-                    .value = 0 // Temporary
+                bf_ops_append(&op_array, (BFOp) {
+                        .type = JUMP_ZERO,
+                        .value = 0 // Temporary
                 });
                 break;
             }
             case ']': {
-                bf_op_array_append(&op_array, (BFOp) {
-                    .type = JUMP_NONZERO,
-                    .value = 0 // Temporary
+                bf_ops_append(&op_array, (BFOp) {
+                        .type = JUMP_NONZERO,
+                        .value = 0 // Temporary
                 });
                 break;
             }
             case '.': {
-                bf_op_array_append(&op_array, (BFOp) {
-                    .type = PUT,
-                    .value = 1
+                bf_ops_append(&op_array, (BFOp) {
+                        .type = PUT,
+                        .value = 1
                 });
                 break;
             }
             case ',': {
-                bf_op_array_append(&op_array, (BFOp) {
-                    .type = GET,
-                    .value = 1
+                bf_ops_append(&op_array, (BFOp) {
+                        .type = GET,
+                        .value = 1
                 });
                 break;
             }

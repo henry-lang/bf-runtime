@@ -16,7 +16,7 @@ typedef struct BFConfig {
 typedef struct BFProgram {
     BFConfig config;
 
-    BFOpArray ops;
+    BFOps ops;
 
     char* memory;
     char* ptr;
