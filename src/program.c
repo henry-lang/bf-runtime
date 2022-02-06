@@ -37,13 +37,10 @@ BFProgram bf_construct(BFConfig config) {
     source[length] = '\0';
     fclose(file);
 
-    BFOpArray unoptimized = bf_parse(source, length);
+    BFOps unoptimized = bf_parse(source, length);
     program.ops = bf_optimize(&unoptimized);
-    for(size_t i = 0; i < unoptimized .length; i++) {
-        printf("%s: %lld\n", bf_op_str(program.ops.ops[i].type), program.ops.ops[i].value);
-    }
-
-    bf_op_array_free(&unoptimized);
+//    bf_ops_print(&program.ops);
+    bf_ops_free(&unoptimized);
 
     program.memory = malloc(sizeof(char) * config.memory_size);
     program.ptr = program.memory;
@@ -56,73 +53,7 @@ BFProgram bf_construct(BFConfig config) {
     return program;
 }
 
-void bf_run(BFProgram* program) {
-//    while(*(program->current) != '\0') {
-//        char token = *(program->current);
-//
-//        switch (token) {
-//            default: break;
-//
-//            case '>': {
-//                ++program->cell;
-//                break;
-//            }
-//
-//            case '<': {
-//                --program->cell;
-//                break;
-//            }
-//
-//            case '+': {
-//                ++*(program->cell);
-//                break;
-//            }
-//
-//            case '-': {
-//                --*(program->cell);
-//                break;
-//            }
-//
-//            case '.': {
-//                putchar(*(program->cell));
-//                break;
-//            }
-//
-//            case ',': {
-//                *(program->cell) = (char) getchar();
-//                break;
-//            }
-//
-//            case '[': {
-//                if(*(program->cell) == 0) {
-//                    while(*(program->current) != ']') { // Loop until we find matching bracket.
-//                        ++program->current;
-//                    }
-//                    continue;
-//                }
-//
-//                ++program->stack_pointer;
-//                program->stack_pointer = program->current;
-//
-//                break;
-//            }
-//
-//            case ']': {
-//                if(*(program->cell) != 0) {
-//                    program->current = program->stack_pointer;
-//                    continue;
-//                }
-//
-//                *(program->stack_pointer) = 0;
-//                --program->stack_pointer;
-//
-//                break;
-//            }
-//        }
-//    }
-}
-
 void bf_free(BFProgram* program) {
-    bf_op_array_free(&program->ops);
+    bf_ops_free(&program->ops);
     free(program->memory);
 }

@@ -4,11 +4,11 @@
 #include "log.h"
 #include "optimize.h"
 
-BFOpArray bf_optimize(BFOpArray* unoptimized) {
-    BFOpArray op_array = bf_op_array_init(unoptimized->length);
+BFOps bf_optimize(BFOps* unopt) {
+    BFOps op_array = bf_ops_init(64);
 
-    for(int i = 0; i < unoptimized->length; i++) {
-        BFOp* current = &op_array.ops[i];
+    for(int i = 0; i < unopt->length; i++) {
+        BFOp* current = &unopt->ops[i];
         switch(current->type) {
             default: {
                 bf_logf_error("%s%d", "Unexpected instruction: ", current->type);
@@ -16,10 +16,11 @@ BFOpArray bf_optimize(BFOpArray* unoptimized) {
             }
             case CHANGE: {
                 int64_t value = current->value;
-                while(op_array.ops[++i].type == CHANGE && i < op_array.length) {
-                    value += op_array.ops[i].value;
+                while(i < unopt->length && unopt->ops[i + 1].type == CHANGE) {
+                    i++;
+                    value += unopt->ops[i].value;
                 }
-                bf_op_array_append(&op_array, (BFOp) {
+                bf_ops_append(&op_array, (BFOp) {
                     .type = CHANGE,
                     .value = value
                 });
@@ -28,10 +29,11 @@ BFOpArray bf_optimize(BFOpArray* unoptimized) {
             }
             case MOVE: {
                 int64_t value = current->value;
-                while(op_array.ops[++i].type == MOVE && i < op_array.length) {
-                    value += op_array.ops[i].value;
+                while(i < unopt->length && unopt->ops[i + 1].type == MOVE) {
+                    i++;
+                    value += unopt->ops[i].value;
                 }
-                bf_op_array_append(&op_array, (BFOp) {
+                bf_ops_append(&op_array, (BFOp) {
                     .type = MOVE,
                     .value = value
                 });
@@ -39,28 +41,28 @@ BFOpArray bf_optimize(BFOpArray* unoptimized) {
                 break;
             }
             case JUMP_ZERO: {
-                bf_op_array_append(&op_array, (BFOp) {
+                bf_ops_append(&op_array, (BFOp) {
                     .type = JUMP_ZERO,
                     .value = 0 // Temporary
                 });
                 break;
             }
             case JUMP_NONZERO: {
-                bf_op_array_append(&op_array, (BFOp) {
+                bf_ops_append(&op_array, (BFOp) {
                     .type = JUMP_NONZERO,
                     .value = 0 // Temporary
                 });
                 break;
             }
             case PUT: {
-                bf_op_array_append(&op_array, (BFOp) {
+                bf_ops_append(&op_array, (BFOp) {
                     .type = PUT,
                     .value = 1
                 });
                 break;
             }
             case GET: {
-                bf_op_array_append(&op_array, (BFOp) {
+                bf_ops_append(&op_array, (BFOp) {
                     .type = GET,
                     .value = 1
                 });
@@ -68,6 +70,5 @@ BFOpArray bf_optimize(BFOpArray* unoptimized) {
             }
         }
     }
-
     return op_array;
 }
