@@ -46,6 +46,6 @@ int main(int argc, char** argv) {
 
     BF_LOG_FILENAME = config.filename;
     BFProgram program = bf_construct(config);
-//    bf_run(&program);
+    bf_run(&program);
     bf_free(&program);
 }

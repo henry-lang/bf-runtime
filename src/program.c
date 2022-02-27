@@ -38,11 +38,13 @@ BFProgram bf_construct(BFConfig config) {
     fclose(file);
 
     BFOps unopt = bf_parse(source, length);
-    size_t unopt_len = unopt.length;
     program.ops = bf_optimize(&unopt);
+
+    size_t unopt_len = unopt.length;
     size_t opt_len = program.ops.length;
-    bf_logf_info("%lu -> %lu\n", unopt_len, opt_len);
-    bf_ops_print(&unopt);
+    bf_logf_info("Optimized: %lu -> %lu\n", unopt_len, opt_len);
+
+    bf_ops_print(&program.ops);
     bf_ops_free(&unopt);
 
     program.memory = malloc(sizeof(char) * config.memory_size);
@@ -54,6 +56,10 @@ BFProgram bf_construct(BFConfig config) {
 
     free(source);
     return program;
+}
+
+void bf_run(BFProgram* program) {
+
 }
 
 void bf_free(BFProgram* program) {

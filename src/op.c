@@ -36,7 +36,7 @@ void bf_ops_append(BFOps* op_array, BFOp op) {
 
 void bf_ops_print(BFOps* op_array) {
     for(size_t i = 0; i < op_array->length; i++) {
-        printf("%s: %d\n", bf_op_str(op_array->ops[i].type), op_array->ops[i].value);
+        printf("%s %lu\n", bf_op_str(op_array->ops[i].type), op_array->ops[i].value);
     }
 }
 

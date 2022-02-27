@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "parse.h"
 #include "log.h"
 #include "optimize.h"
 
@@ -25,42 +26,38 @@ BFOps bf_optimize(BFOps* unopt) {
         BFOp* current = &unopt->ops[i];
         switch(current->type) {
             default: {
-                bf_logf_error("%s%d", "Unexpected instruction: ", current->type);
+                bf_ops_append(&op_array, (BFOp) {
+                    .type = current->type,
+                    .value = current->value
+                });
                 break;
             }
-	    REPEATING_OP(BF_OP_INC);
-	    REPEATING_OP(BF_OP_DEC);
-	    REPEATING_OP(BF_OP_FW);
-	    REPEATING_OP(BF_OP_BK);
+            REPEATING_OP(BF_OP_INC);
+            REPEATING_OP(BF_OP_DEC);
+	        REPEATING_OP(BF_OP_FW);
+	        REPEATING_OP(BF_OP_BK);
             case BF_OP_JZ: {
-                bf_ops_append(&op_array, (BFOp) {
-                    .type = BF_OP_JZ,
-                    .value = 0 // Temporary
-                });
-                break;
-            }
-            case BF_OP_JNZ: {
-                bf_ops_append(&op_array, (BFOp) {
-                    .type = BF_OP_JNZ,
-                    .value = 0 // Temporary
-                });
-                break;
-            }
-            case BF_OP_PUT: {
-                bf_ops_append(&op_array, (BFOp) {
-                    .type = BF_OP_PUT,
-                    .value = 1
-                });
-                break;
-            }
-            case BF_OP_GET: {
-                bf_ops_append(&op_array, (BFOp) {
-                    .type = BF_OP_GET,
-                    .value = 1
-                });
+                // Set Zero Optimization
+                if(i < unopt->length - 2 &&
+                    unopt->ops[i + 1].type == BF_OP_DEC &&
+                    unopt->ops[i + 2].type == BF_OP_JNZ) {
+                    i += 2;
+                    bf_ops_append(&op_array, (BFOp) {
+                        .type = BF_OP_SZ,
+                        .value = 0
+                    });
+                } else {
+                    bf_ops_append(&op_array, (BFOp) {
+                        .type = BF_OP_JZ,
+                        .value = 0 
+                    });
+                }
                 break;
             }
         }
     }
+
+    bf_link(&op_array);
+
     return op_array;
 }

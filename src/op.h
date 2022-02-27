@@ -17,7 +17,7 @@ typedef enum BFOpType {
 
 typedef struct BFOp {
     BFOpType type;
-    uint16_t value;
+    size_t value;
 } BFOp;
 
 typedef struct BFOps {
